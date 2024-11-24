@@ -112,7 +112,5 @@ int main(){
     cout << "h str: ";
     h.printAnfStr();
     cout << "Вес h: " <<  h.w() << endl;
-
-
     return 0;
 }
