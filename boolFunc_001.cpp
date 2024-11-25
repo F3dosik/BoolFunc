@@ -3,45 +3,73 @@
 #include <list>
 
 using namespace std;
-// Представление в виде полинома Жигалкина
-class Anf {
+
+class BoolList {
 private:
-    list<unsigned long long> anf;
+    list<unsigned long long> bl;
+    size_t blSize;
+    int strSize;
+    string str;
 public:
-    Anf(const string& str){
-        size_t strSize = str.size();
-        unsigned long long tmp_anf = 0;
+    // Конструктор с инициализацией по строке
+    BoolList(const string& str){
+        strSize = str.size();
+        this->str = str;
+        unsigned long long tmp_ull = 0;
         for(size_t i = 0; i < strSize; i++){
-            if(i % 64 == 0 && tmp_anf != 0){
-                anf.push_front(tmp_anf);
-                tmp_anf = 0;
+            if(i % 64 == 0 && tmp_ull != 0){
+                bl.push_front(tmp_ull);
+                tmp_ull = 0;
             }
             if(str[strSize - 1 - i] == '1'){
-                tmp_anf |= (1 << i);
+                tmp_ull |= (1 << i);
             }
         }
-        if(tmp_anf != 0){
-            anf.push_front(tmp_anf);
-        }   
+        if(tmp_ull != 0){
+            bl.push_front(tmp_ull);
+        }
+        blSize = bl.size();
     }
-
-    void print_anf(){
-        for(const auto& val : anf){
-            cout << val << " ";
+    // Перегрузка оператора [] для обращения по индексу
+    bool operator[](size_t index) const {
+        if(index >= strSize){
+            throw out_of_range("Индекс за пределами диапазона");
+        }
+        size_t i = index / 64;
+        short s = index % 64;
+        auto it = bl.begin();
+        if(i > ((blSize - 1) / 2)){
+            auto it = bl.rbegin();
+            advance(it, i);
+        }
+        else{
+            advance(it, blSize - 1 - i);
+        }    
+        return ((1 << s) & (*it));
+    }
+    void print_bin() const {
+        for(auto it = bl.begin(); it != bl.end(); ++it){
+            cout << *it << " ";
         }
         cout << endl;
     }
 
-    int deg(){
-        
+};
+// Представление в виде полинома Жигалкина
+class Anf {
+private:
+    BoolList anf; 
+public:
+    Anf(const string& str) : anf(str){}
+    const BoolList& get_anf() const {
+        return anf;
     }
-
 };
 
 
 
 int main(){
-    Anf f("11111111111111111111111111111111111111111111111111111111111111111");
-    f.print_anf();
+    Anf a("100000");
+    a.get_anf().print_bin();
     return 0;
 }
