@@ -9,6 +9,8 @@ typedef unsigned long long ull;
 std::string str_bin(ull n);
 std::string str_bin(ull* arr, unsigned int size);
 
+ull ull_str(std::string line);
+
 void print(std::string line);
 void print(ull n);
 void print_bin(ull n);

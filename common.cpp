@@ -35,6 +35,25 @@ std::string str_bin(ull* arr, unsigned int size)
     return line;
 }
 
+ull ull_str(std::string line)
+{
+    ull n = 0;
+    auto len = line.size();
+
+    if (len > 64)
+        return 0xffffffffffffffff;
+    char t;
+    for (int i = len - 1; i >= 0; i--)
+    {
+        n << 1;
+        t = line[i];
+        if (t == '0' or t == '1')
+            n += (t - '0');
+    }
+
+    return n;
+}
+
 void print(std::string line)
 {
     std::cout << line;
@@ -47,10 +66,12 @@ void print(ull n)
 
 void print_bin(ull n)
 {
-    while (n != 0)
+    uint k = 1;
+    while (k <= 64)
     {
         print((n - ((n << 1) >> 1)) >> 63);
         n <<= 1;
+        k++;
     }
 }
 
