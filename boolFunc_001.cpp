@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <limits>
 
 using namespace std;
 
@@ -58,7 +59,7 @@ public:
             unsigned long long x = *it;
             x = x - ((x >> 1) & 0x5555555555555555);
             x = (x & 0x3333333333333333) + ((x >> 2) & 0x3333333333333333);
-            x = (x + (x >> 4)) & 0x0F0F0F0F;
+            x = (x + (x >> 4)) & 0x0F0F0F0F0F0F0F0F;
             x = x + (x >> 8);
             x = x + (x >> 16);
             x = x + (x >> 32);
@@ -66,9 +67,40 @@ public:
         }
         return res;
     }
+    void plus(int x = 1) {
+        auto it = bl.rbegin();
+        while(*it + x < *it){
+            if(it == prev(bl.rend())){
+                bl.push_front(0);
+                blSize++;
+            }
+            *it += x;
+            x = *it + x + 1;
+            ++it;
+        }
+        *it += 1;
+    }
     void print_bin() const {
         for(auto it = bl.begin(); it != bl.end(); ++it){
             cout << *it << " ";
+        }
+        cout << endl;
+    }
+    void print_str() const {
+        bool zero = true;
+        for(auto it = bl.begin(); it != bl.end(); ++it){
+            short i = 63;
+            while(i >= 0){
+                unsigned long long x = *it >> i;
+                if((*it >> i) & 1){
+                    cout << 1;
+                    zero = false;
+                }
+                else if (!zero) {
+                    cout << 0;
+                }
+                i--;
+            }
         }
         cout << endl;
     }
@@ -101,7 +133,8 @@ public:
 
 
 int main(){
-    BoolList a("11111111111111111111111111111111111111111111111111111111111111111");
-    cout << a.w() << endl;
+    BoolList a("11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
+    a.plus();
+    a.print_str();
     return 0;
 }
