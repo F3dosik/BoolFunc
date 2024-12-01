@@ -1,3 +1,4 @@
 #! /bin/bash
 g++ main.cpp -c 
 g++ main.o -o main common.h TT.h BoolList.h common.cpp TT.cpp BoolList.cpp
+./main

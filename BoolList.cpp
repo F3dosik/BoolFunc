@@ -28,21 +28,22 @@ BoolList::BoolList(std::string line)
 
     vec = new ull[blocks];
 
-    for (int i = blocks - 1; i >= 0; i--)
+
+    for (int i = 0; i < blocks; i++)
     {
         auto start = std::max(0, (int)length - (i + 1) * 64);
-        auto end   = length - i * 64 - 1;
-        println(line.substr(start, end));    
-        vec[i] = ull_str(line.substr(start, end));
+        auto end   = (int)length - i * 64 - 1;
+        if (end != start)
+            vec[blocks - 1 - i] = ull_str(line.substr(start, end));
+        else
+            vec[blocks - 1 - i] = (line[start] == '0') ? 0 : 1;
     }
 
     
 }
 
-
 void BoolList::show_list()
 {
-    println(blocks);
     for (int i = 0; i < blocks; i++)
         print_bin(vec[i]);
     println("");

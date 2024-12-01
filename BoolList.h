@@ -8,16 +8,19 @@ typedef unsigned long long ull;
 
 class BoolList
 {
+public:
+
     unsigned int length;
     unsigned int blocks;
     ull* vec;
 
-public:
     
     BoolList(unsigned int len);
     BoolList(std::string line);
     BoolList(BoolList& bl);
-    
+   
+    unsigned int wht() { return weight(vec, blocks); }
+
     bool operator [](unsigned int i);
     void operator <<(unsigned int i);
     void operator >>(unsigned int i);

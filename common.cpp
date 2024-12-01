@@ -45,7 +45,7 @@ ull ull_str(std::string line)
     char t;
     for (int i = len - 1; i >= 0; i--)
     {
-        n << 1;
+        n <<= 1;
         t = line[i];
         if (t == '0' or t == '1')
             n += (t - '0');
