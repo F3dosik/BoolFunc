@@ -35,9 +35,6 @@ BoolList::BoolList(std::string line)
     {
         auto start = std::max(0, len - (i + 1) * 64);
         int remain = -(len - (i + 1) * 64);
-        print((long long int)start);
-        print(" ");
-        println((long long int)remain);
         if (remain <= 0)
             remain = 64;
         else
@@ -45,6 +42,27 @@ BoolList::BoolList(std::string line)
         vec[blocks - 1 - i] = ull_str(line.substr(start, remain));
     }
     
+}
+
+BoolList::BoolList(BoolList& bl)
+{
+    vec = bl.vec;
+    length = bl.length;
+    blocks = bl.blocks;
+}
+
+bool BoolList::operator[] (unsigned int i)
+{
+    if (i > length)
+        return 0;
+
+    auto t = i >> 6;
+    auto ind = i - (t << 6);
+    ull bit = 1;
+    bit <<= (ind);
+     
+    //return ((vec[blocks - t - 1]) & (1 << ind)); // с какого-то чёрта это выдаёт неверный результат
+    return ((vec[blocks - t - 1]) & bit);
 }
 
 void BoolList::show_list()

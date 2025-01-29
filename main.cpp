@@ -11,6 +11,14 @@ int main()
     string line = "11111111100011000000000000000000000000000000000000000000000000000000000000101";
     BoolList bl(line);
     bl.show_list();
-    cout << line.size() << endl;
+
+
+    for (int i = 127; i >= 0; i--)
+    {
+        cout << bl[i];
+    }
+    cout << endl;
+
     return 0;
+
 }

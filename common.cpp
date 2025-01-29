@@ -6,21 +6,16 @@ typedef unsigned long long ull;
 
 std::string str_bin(ull n)
 {
-    std::string line = "";
-    bool first_one = false;
-    bool temp = false;
-
-    while (temp != 1)
+    std::string line;
+    int i = 0;
+    ull bit = 1; 
+    for (int i = 0; i < 64; i++)
     {
-        temp = (n - ((n << 1) >> 1) >> 63);
-        n <<= 1;
-    }
-    line += '1';
-    while (n != 0)
-    {
-        temp = (n - ((n << 1) >> 1) >> 63);
-        line += char('0' + temp);
-	n <<= 1;
+        if ((n & bit) != 0)
+            line = "1" + line;
+        else
+            line = "0" + line;    
+        bit <<= 1;
     }
     return line;
 }
@@ -39,7 +34,6 @@ ull ull_str(std::string line)
 {
     ull n = 0;
     auto len = line.size();
-    println(line);
     if (len > 64)
         return 0xffffffffffffffff;
     char t;
@@ -52,9 +46,6 @@ ull ull_str(std::string line)
         bit <<= 1;
     }
 
-    print("\n");
-    
-    println(n);
     return n;
 }
 
