@@ -46,10 +46,28 @@ BoolList::BoolList(std::string line)
 
 BoolList::BoolList(BoolList& bl)
 {
-    vec = bl.vec;
     length = bl.length;
     blocks = bl.blocks;
+    for (int i = 0; i < blocks; i++)
+        vec[i] = bl.vec[i];
 }
+
+void BoolList::operator= (const BoolList bl)
+{
+    length = bl.length;
+    blocks = bl.blocks;
+    for (int x = 0; x < blocks; x++)
+        vec[x] = bl.vec[x];
+}
+
+void BoolList::operator= (BoolList& bl)
+{
+    length = bl.length;
+    blocks = bl.blocks;
+    for (int x = 0; x < blocks; x++)
+        vec[x] = bl.vec[x];
+}
+
 
 bool BoolList::operator[] (unsigned int i)
 {
@@ -63,6 +81,59 @@ bool BoolList::operator[] (unsigned int i)
      
     //return ((vec[blocks - t - 1]) & (1 << ind)); // с какого-то чёрта это выдаёт неверный результат
     return ((vec[blocks - t - 1]) & bit);
+}
+
+const BoolList BoolList::operator<< (unsigned int i)
+{
+    BoolList bl_(length);
+    for (int x = 0; x < blocks; x++)
+        bl_.vec[x] = vec[x];
+
+    if (i == 0)
+        return bl_;
+
+    if (i < 64)
+    {
+        bl_.vec[blocks - 1] <<= i;
+        for (int x = bl_.blocks - 2; x >= 0; x--)
+        {
+            bl_.vec[x] = (vec[x + 1] >> (64 - i)) | (vec[x] << i);
+        }
+    }
+    else if (i >= 64)
+    {
+        bl_ = bl_ << 63;
+        i -= 63; 
+        bl_ = bl_ << i;
+    }
+    
+    return bl_;
+}
+
+const BoolList BoolList::operator>> (unsigned int i)
+{
+    BoolList bl_(length);
+    for (int x = 0; x < blocks; x++)
+        bl_.vec[x] = vec[x];
+
+    if (i == 0)
+        return bl_;
+
+    if (i < 64)
+    {
+        bl_.vec[0] >>= i;
+        for (int x = 1; x < blocks; x++)
+        {
+            bl_.vec[x] = (vec[x - 1] << (64 - i)) | (vec[x] >> i);
+        }
+    }
+    else if (i >= 64)
+    {
+        bl_ = bl_ >> 63;
+        i -= 63;
+        bl_ = bl_ >> i;
+    }
+    return bl_;
 }
 
 void BoolList::show_list()
