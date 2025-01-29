@@ -20,7 +20,7 @@ std::string str_bin(ull n)
     {
         temp = (n - ((n << 1) >> 1) >> 63);
         line += char('0' + temp);
-        n <<= 1;
+	n <<= 1;
     }
     return line;
 }
@@ -39,18 +39,22 @@ ull ull_str(std::string line)
 {
     ull n = 0;
     auto len = line.size();
-
+    println(line);
     if (len > 64)
         return 0xffffffffffffffff;
     char t;
+    ull bit = 1;
     for (int i = len - 1; i >= 0; i--)
     {
-        n <<= 1;
         t = line[i];
         if (t == '0' or t == '1')
-            n += (t - '0');
+            n += (t - '0') == 0 ? 0 : bit;
+        bit <<= 1;
     }
 
+    print("\n");
+    
+    println(n);
     return n;
 }
 
@@ -60,6 +64,11 @@ void print(std::string line)
 }
 
 void print(ull n)
+{
+    std::cout << n;
+}
+
+void print(long long n)
 {
     std::cout << n;
 }
@@ -81,6 +90,11 @@ void println(std::string line)
 }
 
 void println(ull n)
+{
+    std::cout << n << std::endl;
+}
+
+void println(long long int n)
 {
     std::cout << n << std::endl;
 }

@@ -13,11 +13,13 @@ ull ull_str(std::string line);
 
 void print(std::string line);
 void print(ull n);
+void print(long long n);
 void print_bin(ull n);
 void print_bin(ull* n, unsigned int size);
 
 void println(std::string line);
 void println(ull n);
+void println(long long n);
 
 unsigned int weight(unsigned long long n);
 unsigned int weight(unsigned long long* arr, unsigned int size);

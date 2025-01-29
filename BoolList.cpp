@@ -22,6 +22,8 @@ BoolList::BoolList(std::string line)
     length = line.size();
     if (length == 0)
         length++;
+    
+    int len = length;
 
     blocks = length >> 6;
     blocks += (blocks << 6) != length;
@@ -31,14 +33,17 @@ BoolList::BoolList(std::string line)
 
     for (int i = 0; i < blocks; i++)
     {
-        auto start = std::max(0, (int)length - (i + 1) * 64);
-        auto end   = (int)length - i * 64 - 1;
-        if (end != start)
-            vec[blocks - 1 - i] = ull_str(line.substr(start, end));
+        auto start = std::max(0, len - (i + 1) * 64);
+        int remain = -(len - (i + 1) * 64);
+        print((long long int)start);
+        print(" ");
+        println((long long int)remain);
+        if (remain <= 0)
+            remain = 64;
         else
-            vec[blocks - 1 - i] = (line[start] == '0') ? 0 : 1;
+            remain = 64 - remain;
+        vec[blocks - 1 - i] = ull_str(line.substr(start, remain));
     }
-
     
 }
 
