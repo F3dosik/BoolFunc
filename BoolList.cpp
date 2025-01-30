@@ -5,7 +5,7 @@ typedef unsigned long long ull;
 
 BoolList::BoolList(unsigned int len)
 {
-    length = len;
+    auto length = len;
     if (length == 0)
         length++;
     blocks = length >> 6;
@@ -19,12 +19,10 @@ BoolList::BoolList(unsigned int len)
 
 BoolList::BoolList(std::string line)
 {
-    length = line.size();
+    int length = line.size();
     if (length == 0)
         length++;
     
-    int len = length;
-
     blocks = length >> 6;
     blocks += (blocks << 6) != length;
 
@@ -33,8 +31,8 @@ BoolList::BoolList(std::string line)
 
     for (int i = 0; i < blocks; i++)
     {
-        auto start = std::max(0, len - (i + 1) * 64);
-        int remain = -(len - (i + 1) * 64);
+        auto start = std::max(0, length - (i + 1) * 64);
+        int remain = -(length - (i + 1) * 64);
         if (remain <= 0)
             remain = 64;
         else
@@ -46,32 +44,30 @@ BoolList::BoolList(std::string line)
 
 BoolList::BoolList(BoolList& bl)
 {
-    length = bl.length;
     blocks = bl.blocks;
     for (int i = 0; i < blocks; i++)
         vec[i] = bl.vec[i];
 }
 
-void BoolList::operator= (const BoolList bl)
+void BoolList::operator= (BoolList bl)
 {
-    length = bl.length;
     blocks = bl.blocks;
     for (int x = 0; x < blocks; x++)
         vec[x] = bl.vec[x];
 }
 
-void BoolList::operator= (BoolList& bl)
-{
-    length = bl.length;
-    blocks = bl.blocks;
-    for (int x = 0; x < blocks; x++)
-        vec[x] = bl.vec[x];
-}
+//void BoolList::operator= (BoolList& bl)
+//{
+//    length = bl.length;
+//    blocks = bl.blocks;
+//    for (int x = 0; x < blocks; x++)
+//        vec[x] = bl.vec[x];
+//}
 
 
 bool BoolList::operator[] (unsigned int i)
 {
-    if (i > length)
+    if (i > 64 * blocks)
         return 0;
 
     auto t = i >> 6;
@@ -83,56 +79,71 @@ bool BoolList::operator[] (unsigned int i)
     return ((vec[blocks - t - 1]) & bit);
 }
 
-const BoolList BoolList::operator<< (unsigned int i)
+BoolList BoolList::operator<< (unsigned int i) const
 {
-    BoolList bl_(length);
+    auto cp = i;
+    BoolList bl_(64 * blocks);
     for (int x = 0; x < blocks; x++)
         bl_.vec[x] = vec[x];
 
-    if (i == 0)
+    if (cp == 0)
         return bl_;
 
-    if (i < 64)
+    if (cp < 64)
     {
-        bl_.vec[blocks - 1] <<= i;
+        bl_.vec[blocks - 1] <<= cp;
         for (int x = bl_.blocks - 2; x >= 0; x--)
         {
-            bl_.vec[x] = (vec[x + 1] >> (64 - i)) | (vec[x] << i);
+            bl_.vec[x] = (vec[x + 1] >> (64 - cp)) | (vec[x] << cp);
         }
     }
-    else if (i >= 64)
+    else if (cp >= 64)
     {
         bl_ = bl_ << 63;
-        i -= 63; 
-        bl_ = bl_ << i;
+        cp -= 63; 
+        bl_ = bl_ << cp;
     }
     
     return bl_;
 }
 
-const BoolList BoolList::operator>> (unsigned int i)
+BoolList BoolList::operator>> (unsigned int i) const
 {
-    BoolList bl_(length);
+    auto cp = i;
+    BoolList bl_(64 * blocks);
     for (int x = 0; x < blocks; x++)
         bl_.vec[x] = vec[x];
 
-    if (i == 0)
+    if (cp == 0)
         return bl_;
 
-    if (i < 64)
+    if (cp < 64)
     {
-        bl_.vec[0] >>= i;
+        bl_.vec[0] >>= cp;
         for (int x = 1; x < blocks; x++)
         {
-            bl_.vec[x] = (vec[x - 1] << (64 - i)) | (vec[x] >> i);
+            bl_.vec[x] = (vec[x - 1] << (64 - cp)) | (vec[x] >> cp);
         }
     }
-    else if (i >= 64)
+    else if (cp >= 64)
     {
         bl_ = bl_ >> 63;
-        i -= 63;
-        bl_ = bl_ >> i;
+        cp -= 63;
+        bl_ = bl_ >> cp;
     }
+    return bl_;
+}
+
+//const BoolList BoolList::operator& (BoolList& bl) const
+//{
+//    BoolList bl_(50);
+
+ //   return bl_;
+//}
+
+BoolList BoolList::operator& (const BoolList bl) const
+{
+    BoolList bl_(64); 
     return bl_;
 }
 
@@ -142,3 +153,65 @@ void BoolList::show_list()
         print_bin(vec[i]);
     println("");
 }
+
+void BoolList::compress()
+{
+    int empty = 0;
+    for (int i = 0; i < blocks; i++)
+    {
+        if (vec[i] != 0)
+            break;
+        else
+            empty++;
+    }
+    if (empty != 0)
+    {
+        if (empty == blocks)
+        {
+            delete[] vec;
+            vec = new ull[1];
+            blocks = 1;
+        }
+        else
+        {
+            ull* tmp = new ull[blocks - empty];
+            for (int i = blocks - 1; i > empty - 1; i--)
+                tmp[blocks - 1 - i] = vec[i];
+            delete[] vec;
+            vec = new ull[blocks - empty];
+            for (int i = 0; i < blocks - empty; i++)
+                vec[i] = tmp[i];
+            blocks = blocks - empty;
+
+            delete[] tmp;
+        }
+    }
+}
+
+void BoolList::stretch(unsigned int s_blocks)
+{
+    ull* tmp = new ull[s_blocks];
+    if (s_blocks == blocks)
+        return;
+    int vec_j = 0;
+
+    for (int i = s_blocks - 1; i >= 0; i--)
+    {
+        if (vec_j < blocks)
+        {
+            tmp[i] = vec[blocks - 1 - vec_j];
+            vec_j++;
+        }
+        else
+        {
+            tmp[i] = 0;    
+        }
+    }
+    delete[] vec;
+    vec = new ull[s_blocks];
+    for (int i = 0; i < s_blocks; i++)
+        vec[i] = tmp[i];
+    delete[] tmp;
+    blocks = s_blocks;
+}
+

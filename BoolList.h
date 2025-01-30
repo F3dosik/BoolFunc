@@ -10,7 +10,6 @@ class BoolList
 {
 public:
 
-    unsigned int length;
     unsigned int blocks;
     ull* vec;
 
@@ -21,15 +20,18 @@ public:
     unsigned int wht() { return weight(vec, blocks); }
 
     bool operator [](unsigned int i);
-    void operator =(const BoolList bl);
-    void operator =(BoolList& bl);
-    const BoolList operator <<(unsigned int i);
-    const BoolList operator >>(unsigned int i);
-    void operator &(BoolList& bl);
-    void operator |(BoolList& bl);
+    void operator =(BoolList bl);
+    //void operator =(BoolList& bl);
+    BoolList operator<< (unsigned int i) const;
+    BoolList operator>> (unsigned int i) const;
+    //const BoolList operator& (BoolList& bl) const;
+    BoolList operator| (BoolList& bl) const;
+    BoolList operator& (const BoolList bl) const;
+    BoolList operator| (const BoolList bl) const;
 
     void show_list();
-
+    void compress();
+    void stretch(unsigned int s_blocks);
     ~BoolList() { delete[] vec; }
 };
 
