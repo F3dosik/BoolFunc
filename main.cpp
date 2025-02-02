@@ -12,21 +12,14 @@ int main()
     BoolList bl1(line);
     bl1.show_list();
     
-    BoolList bl2("100");
-    bl1 = bl1 << 50;
-    bl1.vec[0] = 0;
-    
-    bl1.compress();
-    
+    BoolList bl2("110");
+    bl2.stretch(2);
+    bl2 = bl2 << 60;
+    bl2.show_list(); 
+
+    bl1 = bl1 & bl2;
     bl1.show_list();
 
-    bl1.stretch(2);
-
-    bl1.show_list();
-
-    bl1.stretch(1);
-
-    bl1.show_list();
     return 0;
 
 }

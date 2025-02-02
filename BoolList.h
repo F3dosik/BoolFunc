@@ -17,6 +17,7 @@ public:
     BoolList(unsigned int len);
     BoolList(std::string line);
     BoolList(BoolList& bl);
+    BoolList(const BoolList* bl);
     unsigned int wht() { return weight(vec, blocks); }
 
     bool operator [](unsigned int i);
@@ -25,13 +26,14 @@ public:
     BoolList operator<< (unsigned int i) const;
     BoolList operator>> (unsigned int i) const;
     //const BoolList operator& (BoolList& bl) const;
-    BoolList operator| (BoolList& bl) const;
-    BoolList operator& (const BoolList bl) const;
-    BoolList operator| (const BoolList bl) const;
+    BoolList operator| (BoolList bl) const;
+    BoolList operator& (BoolList bl) const;
+    //BoolList operator| (const BoolList bl) const;
 
     void show_list();
     void compress();
     void stretch(unsigned int s_blocks);
+    void clear();
     ~BoolList() { delete[] vec; }
 };
 

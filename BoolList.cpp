@@ -45,14 +45,25 @@ BoolList::BoolList(std::string line)
 BoolList::BoolList(BoolList& bl)
 {
     blocks = bl.blocks;
+    vec = new ull[blocks];
     for (int i = 0; i < blocks; i++)
         vec[i] = bl.vec[i];
 }
 
+BoolList::BoolList(const BoolList* bl)
+{
+    blocks = bl->blocks;
+    vec = new ull[blocks];
+    for (int i = 0; i < blocks; i++)
+        vec[i] = bl->vec[i];
+}
+
 void BoolList::operator= (BoolList bl)
 {
+    delete[] vec;
+    vec = new ull[bl.blocks];
     blocks = bl.blocks;
-    for (int x = 0; x < blocks; x++)
+    for (int x = 0; x < bl.blocks; x++)
         vec[x] = bl.vec[x];
 }
 
@@ -134,17 +145,34 @@ BoolList BoolList::operator>> (unsigned int i) const
     return bl_;
 }
 
-//const BoolList BoolList::operator& (BoolList& bl) const
-//{
-//    BoolList bl_(50);
-
- //   return bl_;
-//}
-
-BoolList BoolList::operator& (const BoolList bl) const
+BoolList BoolList::operator| (BoolList bl) const
 {
-    BoolList bl_(64); 
-    return bl_;
+    BoolList a(bl);
+    BoolList b(this);
+    if (a.blocks < b.blocks)
+        a.stretch(b.blocks);
+    else if (b.blocks < a.blocks)
+        b.stretch(a.blocks);
+
+    for (int i = 0; i < a.blocks; i++)
+        a.vec[i] = (a.vec[i] | b.vec[i]);
+
+    return a;
+}
+
+BoolList BoolList::operator& (BoolList bl) const
+{
+    BoolList a(bl);
+    BoolList b(this);
+    if (a.blocks < b.blocks)
+        a.stretch(b.blocks);
+    else if (b.blocks < a.blocks)
+        b.stretch(a.blocks);
+
+    for (int i = 0; i < a.blocks; i++)
+        a.vec[i] = (a.vec[i] & b.vec[i]);
+
+    return a;
 }
 
 void BoolList::show_list()
@@ -215,3 +243,11 @@ void BoolList::stretch(unsigned int s_blocks)
     blocks = s_blocks;
 }
 
+
+void BoolList::clear()
+{
+    delete[] vec;
+    for (int i = 0; i < blocks; i++)
+        vec[i] = 0;
+
+}
